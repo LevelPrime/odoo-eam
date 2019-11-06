@@ -54,7 +54,7 @@ class mro_order(models.Model):
                     self.planning_strategy_1(asset, meter, tasks, horizon, origin)
         return True
 
-    def planning_strategy_1(self, asset, meter, tasks, horizon, origin):
+    def planning_strategy_1(self, asset, meter, tasks, horizon, origin, start_date=None):
         tasks.sort(lambda y,x: cmp(x.meter_interval_id.interval_max, y.meter_interval_id.interval_max))
         K = 3600.0*24
         hf = len(tasks)-1
@@ -89,7 +89,8 @@ class mro_order(models.Model):
         Dc = 1.0*calendar.timegm(time.strptime(meter.date, "%Y-%m-%d"))
         N = meter.utilization
         Hp = 3600.0*24*31*horizon
-        Dn = 1.0*calendar.timegm(time.strptime(time.strftime('%Y-%m-%d',time.gmtime()),"%Y-%m-%d"))
+        start_date = start_date or time.strftime('%Y-%m-%d',time.gmtime())
+        Dn = 1.0*calendar.timegm(time.strptime(start_date,"%Y-%m-%d"))
         Si[lf] = Imin[lf]
         for i in range(hf):
             Si[i+1] = self.find_step(Ci[i+1], Ci[i] + Si[i], Imin[i+1], Imax[i+1])
